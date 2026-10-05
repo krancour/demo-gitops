@@ -4,7 +4,7 @@ metadata:
   name: payments-pre-prod
   namespace: argocd
   annotations:
-    kargo.akuity.io/authorized-stage: "kargobook-demo:payments-pre-prod"
+    kargo.akuity.io/authorized-stage: "kargobook-demo:payments-pre-prod,kargobook-demo:pre-prod"
 spec:
   project: default
   source:
