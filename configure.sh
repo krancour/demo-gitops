@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# configure.sh — Substitute placeholder values throughout the example files.
+# configure.sh: Substitute placeholder values throughout the example files.
 #
 # Usage:
 #   GITHUB_ORG=my-org GITHUB_USER=my-username bash configure.sh
@@ -28,7 +28,7 @@ echo "  GITHUB_ORG:  ${GITHUB_ORG}"
 echo "  GITHUB_USER: ${GITHUB_USER}"
 echo ""
 
-# Only the GitHub git repo URLs change — the image stays at ghcr.io/kargobook/demo-app
+# Only the GitHub git repo URLs change; the image stays at ghcr.io/kargobook/demo-app
 # so readers don't need to build or push anything.
 find "$SCRIPT_DIR" -name "*.yaml" | while read -r file; do
   sed -i.bak \
@@ -42,7 +42,7 @@ done
 echo ""
 echo "Done. Next steps:"
 echo "  1. Add your GitHub token to setup/03-git-credentials.yaml"
-echo "     (replace YOUR_GITHUB_TOKEN — do not commit this file with a real token)"
+echo "     (replace YOUR_GITHUB_TOKEN; do not commit this file with a real token)"
 echo "  2. Apply cluster resources (from the demo-gitops repo root):"
 echo "     kubectl apply -f setup/00-namespaces.yaml"
 echo "     kubectl apply -f setup/01-project.yaml"

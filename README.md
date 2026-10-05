@@ -4,7 +4,7 @@ GitOps configuration repository for **_Kargo in Action_** (Manning). When Kargo 
 
 This repo backs two parts of the book.
 
-## Chapter 3 — Getting started (the `demo-app` walkthrough)
+## Chapter 3: Getting started (the `demo-app` walkthrough)
 
 A single service, `demo-app`, promoted through `dev → pre-prod → prod`. This is the content you fork/clone in chapter 3.
 
@@ -17,7 +17,7 @@ configure.sh                # helper to point the setup at your fork
 
 Kargo's `yaml-update` step writes to `envs/<env>/values.yaml`, and each Argo CD Application renders `charts/demo-app` with its environment's values file.
 
-## Chapters 4 and 7 — Scaling across services (`payments` + `auth`)
+## Chapters 4 and 7: Scaling across services (`payments` + `auth`)
 
 Two coordinated services demonstrating the multi-service patterns. Chapter 4's coordinated pre-prod Stage and chapter 7's multi-service examples both use `apps/payments` and `apps/auth`.
 
@@ -33,9 +33,9 @@ kargo/                      # Kargo Project, Warehouses, and Stages for both ser
 
 ## Related repositories
 
-- [demo-app](https://github.com/kargobook/demo-app) — the `demo-app` sample image
-- [payments-api](https://github.com/kargobook/payments-api), [auth-service](https://github.com/kargobook/auth-service) — chapter 7 sample services
-- [kargo-in-action](https://github.com/kargobook/kargo-in-action) — the book's chapter-by-chapter example listings
+- [demo-app](https://github.com/kargobook/demo-app): the `demo-app` sample image
+- [payments-api](https://github.com/kargobook/payments-api), [auth-service](https://github.com/kargobook/auth-service): chapter 7 sample services
+- [kargo-in-action](https://github.com/kargobook/kargo-in-action): the book's chapter-by-chapter example listings
 
 ## License
 
