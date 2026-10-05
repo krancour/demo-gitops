@@ -3,7 +3,8 @@
 One-time cluster setup resources for Chapter 3. Apply these in order after
 forking this repo and adding your GitHub token to `03-git-credentials.yaml`.
 
-Argo CD only watches `charts/` and `envs/` — it ignores this directory.
+The Argo CD Applications render `charts/` with each environment's `envs/` values
+file; nothing in this directory is rendered into the cluster by Argo CD.
 
 ## Apply order
 

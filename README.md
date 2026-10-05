@@ -1,6 +1,6 @@
 # demo-gitops
 
-GitOps configuration repository for **_Kargo in Action_** (Manning). When Kargo promotes a new image tag, it updates the environment's Helm values file in this repo, and Argo CD syncs the change into the cluster.
+GitOps configuration repository for **_Kargo in Action_** (Manning). When Kargo pins a new image digest, it updates the environment's Helm values file in this repo, and Argo CD syncs the change into the cluster.
 
 This repo backs two parts of the book.
 
@@ -17,9 +17,9 @@ configure.sh                # helper to point the setup at your fork
 
 Kargo's `yaml-update` step writes to `envs/<env>/values.yaml`, and each Argo CD Application renders `charts/demo-app` with its environment's values file.
 
-## Chapter 7 — Scaling across services (`payments` + `auth`)
+## Chapters 4 and 7 — Scaling across services (`payments` + `auth`)
 
-Two coordinated services demonstrating the multi-service patterns.
+Two coordinated services demonstrating the multi-service patterns. Chapter 4's coordinated pre-prod Stage and chapter 7's multi-service examples both use `apps/payments` and `apps/auth`.
 
 ```
 charts/{payments-api,auth-service}/          # one Helm chart per service
