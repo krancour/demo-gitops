@@ -1,6 +1,6 @@
 # demo-gitops
 
-GitOps configuration repository for **_Kargo in Action_** (Manning). When Kargo promotes a new image tag, it updates the Kustomize overlay in this repo, and Argo CD syncs the change into the cluster.
+GitOps configuration repository for **_Kargo in Action_** (Manning). When Kargo promotes a new image tag, it updates the environment's Helm values file in this repo, and Argo CD syncs the change into the cluster.
 
 This repo backs two parts of the book.
 
@@ -9,20 +9,21 @@ This repo backs two parts of the book.
 A single service, `demo-app`, promoted through `dev → pre-prod → prod`. This is the content you fork/clone in chapter 3.
 
 ```
-base/                       # demo-app base manifests
-envs/{dev,pre-prod,prod}/    # per-environment Kustomize overlays (Kargo writes the image tag here)
+charts/demo-app/            # the demo-app Helm chart
+envs/{dev,pre-prod,prod}/    # per-environment values.yaml (Kargo writes the image digest here)
 setup/                      # Kargo Project, Warehouse, Stages + the Argo CD Applications
 configure.sh                # helper to point the setup at your fork
 ```
 
-Kargo's `kustomize-set-image` step writes to `envs/<env>/`, and each Argo CD Application watches one of those overlays.
+Kargo's `yaml-update` step writes to `envs/<env>/values.yaml`, and each Argo CD Application renders `charts/demo-app` with its environment's values file.
 
 ## Chapter 7 — Scaling across services (`payments` + `auth`)
 
 Two coordinated services demonstrating the multi-service patterns.
 
 ```
-apps/{payments,auth}/base + envs/{dev,pre-prod,prod}/
+charts/{payments-api,auth-service}/          # one Helm chart per service
+apps/{payments,auth}/envs/{dev,pre-prod,prod}/  # per-environment values.yaml
 argocd/                     # one Argo CD Application per service/environment
 kargo/                      # Kargo Project, Warehouses, and Stages for both services
 ```

@@ -19,19 +19,29 @@ spec:
             checkout:
               - branch: main
                 path: ./repo
-        - uses: kustomize-set-image
+        - uses: yaml-update
           config:
-            path: ./repo/apps/payments/envs/dev
-            images:
-              - image: ghcr.io/kargobook/payments-api
+            path: ./repo/apps/payments/envs/dev/values.yaml
+            updates:
+              - key: image.digest
+                value: ${{ imageFrom("ghcr.io/kargobook/payments-api").Digest }}
         - uses: git-commit
           config:
             path: ./repo
-            message: "promote payments to dev: ${{ freight.image.tag }}"
+            message: 'promote payments to dev: ${{ imageFrom("ghcr.io/kargobook/payments-api").Tag }}'
         - uses: git-push
+          as: push
           config:
             path: ./repo
             targetBranch: main
+        - uses: argocd-update
+          config:
+            apps:
+              - name: payments-dev
+                sources:
+                  - repoURL: https://github.com/kargobook/demo-gitops.git
+                    desiredRevision: ${{ outputs.push.commit }}
+                    updateTargetRevision: true
 ---
 apiVersion: kargo.akuity.io/v1alpha1
 kind: Stage
@@ -55,19 +65,29 @@ spec:
             checkout:
               - branch: main
                 path: ./repo
-        - uses: kustomize-set-image
+        - uses: yaml-update
           config:
-            path: ./repo/apps/payments/envs/pre-prod
-            images:
-              - image: ghcr.io/kargobook/payments-api
+            path: ./repo/apps/payments/envs/pre-prod/values.yaml
+            updates:
+              - key: image.digest
+                value: ${{ imageFrom("ghcr.io/kargobook/payments-api").Digest }}
         - uses: git-commit
           config:
             path: ./repo
-            message: "promote payments to pre-prod: ${{ freight.image.tag }}"
+            message: 'promote payments to pre-prod: ${{ imageFrom("ghcr.io/kargobook/payments-api").Tag }}'
         - uses: git-push
+          as: push
           config:
             path: ./repo
             targetBranch: main
+        - uses: argocd-update
+          config:
+            apps:
+              - name: payments-pre-prod
+                sources:
+                  - repoURL: https://github.com/kargobook/demo-gitops.git
+                    desiredRevision: ${{ outputs.push.commit }}
+                    updateTargetRevision: true
 ---
 apiVersion: kargo.akuity.io/v1alpha1
 kind: Stage
@@ -91,16 +111,26 @@ spec:
             checkout:
               - branch: main
                 path: ./repo
-        - uses: kustomize-set-image
+        - uses: yaml-update
           config:
-            path: ./repo/apps/payments/envs/prod
-            images:
-              - image: ghcr.io/kargobook/payments-api
+            path: ./repo/apps/payments/envs/prod/values.yaml
+            updates:
+              - key: image.digest
+                value: ${{ imageFrom("ghcr.io/kargobook/payments-api").Digest }}
         - uses: git-commit
           config:
             path: ./repo
-            message: "promote payments to prod: ${{ freight.image.tag }}"
+            message: 'promote payments to prod: ${{ imageFrom("ghcr.io/kargobook/payments-api").Tag }}'
         - uses: git-push
+          as: push
           config:
             path: ./repo
             targetBranch: main
+        - uses: argocd-update
+          config:
+            apps:
+              - name: payments-prod
+                sources:
+                  - repoURL: https://github.com/kargobook/demo-gitops.git
+                    desiredRevision: ${{ outputs.push.commit }}
+                    updateTargetRevision: true

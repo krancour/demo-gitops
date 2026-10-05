@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Every Application renders with its own values file; no Kustomize remains.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+fail=0
+if git ls-files | grep -q 'kustomization.yaml$'; then echo "FAIL: kustomization.yaml remains"; fail=1; fi
+for f in setup/02-argocd-apps.yaml argocd/*.yaml; do
+  while IFS=$'\t' read -r name path vf; do
+    [[ "$path" == charts/* ]] || { echo "FAIL: $f $name path $path"; fail=1; continue; }
+    helm template "$name" "$path" -f "$path/$vf" >/dev/null || { echo "FAIL: $f $name render"; fail=1; }
+  done < <(python3 - "$f" <<'PY'
+import sys, yaml
+for d in yaml.safe_load_all(open(sys.argv[1])):
+    if d and d.get("kind") == "Application":
+        s = d["spec"]["source"]
+        vf = ((s.get("helm") or {}).get("valueFiles") or ["-"])[0]
+        print(d["metadata"]["name"], s.get("path", "-"), vf, sep="\t")
+PY
+)
+done
+if grep -rq 'kustomize-set-image' setup kargo; then echo "FAIL: kustomize-set-image in setup/ or kargo/"; fail=1; fi
+bash tests/test_charts.sh || fail=1
+exit $fail

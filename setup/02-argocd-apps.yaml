@@ -12,7 +12,11 @@ spec:
   source:
     repoURL: https://github.com/kargobook/demo-gitops.git
     targetRevision: main
-    path: envs/dev
+    path: charts/demo-app
+    helm:
+      releaseName: demo-app
+      valueFiles:
+      - ../../envs/dev/values.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: demo-dev
@@ -37,7 +41,11 @@ spec:
   source:
     repoURL: https://github.com/kargobook/demo-gitops.git
     targetRevision: main
-    path: envs/pre-prod
+    path: charts/demo-app
+    helm:
+      releaseName: demo-app
+      valueFiles:
+      - ../../envs/pre-prod/values.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: demo-pre-prod
@@ -62,7 +70,11 @@ spec:
   source:
     repoURL: https://github.com/kargobook/demo-gitops.git
     targetRevision: main
-    path: envs/prod
+    path: charts/demo-app
+    helm:
+      releaseName: demo-app
+      valueFiles:
+      - ../../envs/prod/values.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: demo-prod

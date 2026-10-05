@@ -19,19 +19,29 @@ spec:
             checkout:
               - branch: main
                 path: ./repo
-        - uses: kustomize-set-image
+        - uses: yaml-update
           config:
-            path: ./repo/apps/auth/envs/dev
-            images:
-              - image: ghcr.io/kargobook/auth-service
+            path: ./repo/apps/auth/envs/dev/values.yaml
+            updates:
+              - key: image.digest
+                value: ${{ imageFrom("ghcr.io/kargobook/auth-service").Digest }}
         - uses: git-commit
           config:
             path: ./repo
-            message: "promote auth to dev: ${{ freight.image.tag }}"
+            message: 'promote auth to dev: ${{ imageFrom("ghcr.io/kargobook/auth-service").Tag }}'
         - uses: git-push
+          as: push
           config:
             path: ./repo
             targetBranch: main
+        - uses: argocd-update
+          config:
+            apps:
+              - name: auth-dev
+                sources:
+                  - repoURL: https://github.com/kargobook/demo-gitops.git
+                    desiredRevision: ${{ outputs.push.commit }}
+                    updateTargetRevision: true
 ---
 apiVersion: kargo.akuity.io/v1alpha1
 kind: Stage
@@ -55,19 +65,29 @@ spec:
             checkout:
               - branch: main
                 path: ./repo
-        - uses: kustomize-set-image
+        - uses: yaml-update
           config:
-            path: ./repo/apps/auth/envs/pre-prod
-            images:
-              - image: ghcr.io/kargobook/auth-service
+            path: ./repo/apps/auth/envs/pre-prod/values.yaml
+            updates:
+              - key: image.digest
+                value: ${{ imageFrom("ghcr.io/kargobook/auth-service").Digest }}
         - uses: git-commit
           config:
             path: ./repo
-            message: "promote auth to pre-prod: ${{ freight.image.tag }}"
+            message: 'promote auth to pre-prod: ${{ imageFrom("ghcr.io/kargobook/auth-service").Tag }}'
         - uses: git-push
+          as: push
           config:
             path: ./repo
             targetBranch: main
+        - uses: argocd-update
+          config:
+            apps:
+              - name: auth-pre-prod
+                sources:
+                  - repoURL: https://github.com/kargobook/demo-gitops.git
+                    desiredRevision: ${{ outputs.push.commit }}
+                    updateTargetRevision: true
 ---
 apiVersion: kargo.akuity.io/v1alpha1
 kind: Stage
@@ -91,16 +111,26 @@ spec:
             checkout:
               - branch: main
                 path: ./repo
-        - uses: kustomize-set-image
+        - uses: yaml-update
           config:
-            path: ./repo/apps/auth/envs/prod
-            images:
-              - image: ghcr.io/kargobook/auth-service
+            path: ./repo/apps/auth/envs/prod/values.yaml
+            updates:
+              - key: image.digest
+                value: ${{ imageFrom("ghcr.io/kargobook/auth-service").Digest }}
         - uses: git-commit
           config:
             path: ./repo
-            message: "promote auth to prod: ${{ freight.image.tag }}"
+            message: 'promote auth to prod: ${{ imageFrom("ghcr.io/kargobook/auth-service").Tag }}'
         - uses: git-push
+          as: push
           config:
             path: ./repo
             targetBranch: main
+        - uses: argocd-update
+          config:
+            apps:
+              - name: auth-prod
+                sources:
+                  - repoURL: https://github.com/kargobook/demo-gitops.git
+                    desiredRevision: ${{ outputs.push.commit }}
+                    updateTargetRevision: true

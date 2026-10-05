@@ -3,12 +3,18 @@ kind: Application
 metadata:
   name: auth-pre-prod
   namespace: argocd
+  annotations:
+    kargo.akuity.io/authorized-stage: "kargobook-demo:auth-pre-prod"
 spec:
   project: default
   source:
     repoURL: https://github.com/kargobook/demo-gitops.git
     targetRevision: main
-    path: apps/auth/envs/pre-prod
+    path: charts/auth-service
+    helm:
+      releaseName: auth-service
+      valueFiles:
+      - ../../apps/auth/envs/pre-prod/values.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: auth-pre-prod

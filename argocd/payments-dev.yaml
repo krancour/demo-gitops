@@ -3,12 +3,18 @@ kind: Application
 metadata:
   name: payments-dev
   namespace: argocd
+  annotations:
+    kargo.akuity.io/authorized-stage: "kargobook-demo:payments-dev"
 spec:
   project: default
   source:
     repoURL: https://github.com/kargobook/demo-gitops.git
     targetRevision: main
-    path: apps/payments/envs/dev
+    path: charts/payments-api
+    helm:
+      releaseName: payments-api
+      valueFiles:
+      - ../../apps/payments/envs/dev/values.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: payments-dev
