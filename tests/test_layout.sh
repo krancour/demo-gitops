@@ -19,5 +19,9 @@ PY
 )
 done
 if grep -rq 'kustomize-set-image' setup kargo; then echo "FAIL: kustomize-set-image in setup/ or kargo/"; fail=1; fi
+for pair in "auth-prod charts/auth-service apps/auth/envs/prod/values.yaml" "payments-prod charts/payments-api apps/payments/envs/prod/values.yaml"; do
+  read -r rel chart vf <<<"$pair"
+  helm template "$rel" "$chart" -f "$vf" | grep -q 'replicas: 3$' || { echo "FAIL: $rel must render replicas: 3"; fail=1; }
+done
 bash tests/test_charts.sh || fail=1
 exit $fail
