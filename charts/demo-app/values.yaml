@@ -1,0 +1,18 @@
+fullnameOverride: demo-app
+replicaCount: 1
+image:
+  repository: ghcr.io/kargobook/demo-app
+  tag: ""
+  digest: ""
+containerPort: 80
+env: []
+probes:
+  liveness: {}
+  readiness:
+    httpGet: {path: /, port: http}
+    initialDelaySeconds: 3
+    periodSeconds: 5
+resources: {}
+securityContext: {}
+service:
+  port: 80
