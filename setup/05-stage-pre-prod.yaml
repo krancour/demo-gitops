@@ -27,6 +27,10 @@ spec:
         config:
           path: ./repo/envs/pre-prod/values.yaml
           updates:
+          # The chart deploys by the digest below. The tag is written only
+          # to keep the values file readable.
+          - key: image.tag
+            value: ${{ imageFrom("ghcr.io/kargobook/demo-app").Tag }}
           - key: image.digest
             value: ${{ imageFrom("ghcr.io/kargobook/demo-app").Digest }}
       - uses: git-commit
