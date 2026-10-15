@@ -1,7 +1,7 @@
 apiVersion: kargo.akuity.io/v1alpha1
 kind: Stage
 metadata:
-  name: dev
+  name: pre-prod
   namespace: demo
 spec:
   requestedFreight:
@@ -9,7 +9,8 @@ spec:
       kind: Warehouse
       name: demo-app
     sources:
-      direct: true
+      stages:
+      - dev
   promotionTemplate:
     spec:
       vars:
@@ -24,24 +25,19 @@ spec:
             path: ./repo
       - uses: yaml-update
         config:
-          path: ./repo/envs/dev/values.yaml
+          path: ./repo/envs/pre-prod/values.yaml
           updates:
           - key: image.digest
             value: ${{ imageFrom("ghcr.io/kargobook/demo-app").Digest }}
       - uses: git-commit
         config:
           path: ./repo
-          message: 'Promote to dev: ${{ imageFrom("ghcr.io/kargobook/demo-app").Tag }}'
+          message: 'Promote to pre-prod: ${{ imageFrom("ghcr.io/kargobook/demo-app").Tag }}'
       - uses: git-push
-        as: push
         config:
           path: ./repo
           targetBranch: main
       - uses: argocd-update
         config:
           apps:
-          - name: demo-dev
-            sources:
-            - repoURL: ${{ vars.gitRepo }}
-              desiredRevision: ${{ outputs.push.commit }}
-              updateTargetRevision: true
+          - name: demo-pre-prod

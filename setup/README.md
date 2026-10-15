@@ -1,29 +1,35 @@
 # setup/
 
-One-time cluster setup resources for Chapter 3. Apply these in order after
-forking this repo and adding your GitHub token to `03-git-credentials.yaml`.
+One-time cluster setup resources for chapter 3. The chapter creates them one at
+a time with the Argo CD and Kargo CLIs; this directory is the same material in
+one place, for tearing down and rebuilding.
 
-The Argo CD Applications render `charts/` with each environment's `envs/` values
+Run `configure.sh` first so every file points at your fork. The Argo CD
+Applications render `charts/demo-app` with each environment's `envs/` values
 file; nothing in this directory is rendered into the cluster by Argo CD.
 
 ## Apply order
 
-Apply the Project before the Git credentials, Warehouse, and Stages: it
-provisions the `demo` namespace those resources land in.
-
 ```bash
-kubectl apply -f setup/00-namespaces.yaml
-kubectl apply -f setup/01-project.yaml
-kubectl apply -f setup/02-argocd-apps.yaml
-kubectl apply -f setup/03-git-credentials.yaml   # add your token first
-kubectl apply -f setup/04-warehouse.yaml
-kubectl apply -f setup/05-stage-dev.yaml
-kubectl apply -f setup/06-stage-pre-prod.yaml
-kubectl apply -f setup/07-stage-prod.yaml
-kubectl apply -f setup/08-projectconfig.yaml     # auto-promotion for dev
+argocd appset create setup/01-applicationset.yaml
+kargo create project demo
+kargo create repo-credentials --project demo demo-git-creds --git \
+  --repo-url https://github.com/<your-org>/demo-gitops.git \
+  --username <your-github-username> --password "$(gh auth token)"
+kargo apply -f setup/03-warehouse.yaml
+kargo apply -f setup/04-stage-dev.yaml
+kargo apply -f setup/05-stage-pre-prod.yaml
+kargo apply -f setup/06-stage-prod.yaml
+kargo apply -f setup/07-projectconfig.yaml   # auto-promotion for dev
 ```
 
-Apply `08-projectconfig.yaml` last. It turns on auto-promotion for the `dev`
+`setup/02-project.yaml` is the Project as `kargo create project demo` creates
+it; `kargo apply -f setup/02-project.yaml` is equivalent.
+
+The Git credentials are never stored in a file: `kargo create repo-credentials`
+builds the Secret from the token `gh auth token` prints.
+
+Apply `07-projectconfig.yaml` last. It turns on auto-promotion for the `dev`
 Stage, and the chapter walks through it only after the manual dev, pre-prod, and
 prod promotions, so that auto-promotion has something to demonstrate. Applying
 it earlier is harmless but skips ahead of the narrative.
